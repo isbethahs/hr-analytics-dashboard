@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Mvgn0/Downloads/hr-analytics-dashboard/data/hr_analytics.db..db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="5570"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="0" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="hr_employees" custom_title="0" dock_id="1" table="4,12:mainhr_employees"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011e00ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="02_exploration.sql*">SELECT *
+
+FROM hr_employees
+
+LIMIT 10;
+
+
+
+-- Contar el número total de empleados
+
+SELECT COUNT(*) AS total_empleados
+
+FROM hr_employees;
+
+
+
+PRAGMA table_info(hr_employees);
+
+
+
+-- Empleados que permanecen y empleados que dejaron la empresa
+
+SELECT
+
+    Attrition,
+
+    COUNT(*) AS total_empleados
+
+FROM hr_employees
+
+GROUP BY Attrition;
+
+
+
+-- Tasa de rotación global
+
+SELECT
+
+    ROUND(
+
+        SUM(CASE
+
+                WHEN Attrition = 'Yes' THEN 1
+
+                ELSE 0
+
+            END) * 100.0 / COUNT(*),
+
+        1
+
+    ) AS tasa_rotacion
+
+FROM hr_employees;</sql><sql name="03_hr_analysis.sql*">-- ============================================
+
+-- Análisis de Recursos Humanos
+
+-- Proyecto: HR Analytics Dashboard
+
+-- ============================================
+
+
+
+
+
+-- 1. Tasa de rotación por departamento
+
+
+
+SELECT
+
+    Department,
+
+    COUNT(*) AS total_empleados,
+
+    SUM(
+
+        CASE
+
+            WHEN Attrition = 'Yes' THEN 1
+
+            ELSE 0
+
+        END
+
+    ) AS empleados_que_salieron,
+
+    ROUND(
+
+        SUM(
+
+            CASE
+
+                WHEN Attrition = 'Yes' THEN 1.0
+
+                ELSE 0
+
+            END
+
+        ) / COUNT(*) * 100,
+
+        1
+
+    ) AS tasa_rotacion
+
+FROM hr_employees
+
+GROUP BY Department
+
+ORDER BY tasa_rotacion DESC;
+
+
+
+-- 2. Tasa de rotación por cargo
+
+
+
+SELECT
+
+    JobRole,
+
+    COUNT(*) AS total_empleados,
+
+    SUM(
+
+        CASE
+
+            WHEN Attrition = 'Yes' THEN 1
+
+            ELSE 0
+
+        END
+
+    ) AS empleados_que_salieron,
+
+    ROUND(
+
+        SUM(
+
+            CASE
+
+                WHEN Attrition = 'Yes' THEN 1.0
+
+                ELSE 0
+
+            END
+
+        ) / COUNT(*) * 100,
+
+        1
+
+    ) AS tasa_rotacion
+
+FROM hr_employees
+
+GROUP BY JobRole
+
+ORDER BY tasa_rotacion DESC;
+
+
+
+-- 3. Salario promedio por cargo y nivel de satisfacción
+
+
+
+SELECT
+
+    JobRole,
+
+    JobSatisfaction,
+
+    ROUND(AVG(MonthlyIncome), 0) AS salario_promedio,
+
+    COUNT(*) AS total_empleados
+
+FROM hr_employees
+
+GROUP BY JobRole, JobSatisfaction
+
+ORDER BY JobRole, JobSatisfaction;
+
+
+
+-- 4. Salario promedio por nivel de satisfacción
+
+
+
+SELECT
+
+    JobSatisfaction,
+
+    ROUND(AVG(MonthlyIncome), 0) AS salario_promedio,
+
+    COUNT(*) AS total_empleados
+
+FROM hr_employees
+
+GROUP BY JobSatisfaction
+
+ORDER BY JobSatisfaction;
+
+
+
+-- 5. Headcount por departamento y género
+
+
+
+SELECT
+
+    Department,
+
+    Gender,
+
+    COUNT(*) AS headcount
+
+FROM hr_employees
+
+GROUP BY Department, Gender
+
+ORDER BY Department, Gender;
+
+
+
+-- 6. Rotación según horas extra
+
+
+
+SELECT
+
+    OverTime,
+
+    COUNT(*) AS total_empleados,
+
+    SUM(
+
+        CASE
+
+            WHEN Attrition = 'Yes' THEN 1
+
+            ELSE 0
+
+        END
+
+    ) AS empleados_que_salieron,
+
+    ROUND(
+
+        SUM(
+
+            CASE
+
+                WHEN Attrition = 'Yes' THEN 1.0
+
+                ELSE 0
+
+            END
+
+        ) / COUNT(*) * 100,
+
+        1
+
+    ) AS tasa_rotacion
+
+FROM hr_employees
+
+GROUP BY OverTime
+
+ORDER BY tasa_rotacion DESC;
+
+
+
+-- 7. Antigüedad promedio según estado de rotación
+
+
+
+SELECT
+
+    Attrition,
+
+    ROUND(AVG(YearsAtCompany), 1) AS promedio_anios_empresa,
+
+    MIN(YearsAtCompany) AS minimo,
+
+    MAX(YearsAtCompany) AS maximo,
+
+    COUNT(*) AS total_empleados
+
+FROM hr_employees
+
+GROUP BY Attrition;
+
+
+
+-- 8. Tasa de rotación por rango de antigüedad
+
+
+
+SELECT
+
+    CASE
+
+        WHEN YearsAtCompany &lt;= 2 THEN '0-2 años'
+
+        WHEN YearsAtCompany &lt;= 5 THEN '3-5 años'
+
+        WHEN YearsAtCompany &lt;= 10 THEN '6-10 años'
+
+        ELSE 'Más de 10 años'
+
+    END AS rango_antiguedad,
+
+
+
+    COUNT(*) AS total_empleados,
+
+
+
+    SUM(
+
+        CASE
+
+            WHEN Attrition = 'Yes' THEN 1
+
+            ELSE 0
+
+        END
+
+    ) AS empleados_que_salieron,
+
+
+
+    ROUND(
+
+        SUM(
+
+            CASE
+
+                WHEN Attrition = 'Yes' THEN 1.0
+
+                ELSE 0
+
+            END
+
+        ) / COUNT(*) * 100,
+
+        1
+
+    ) AS tasa_rotacion
+
+
+
+FROM hr_employees
+
+
+
+GROUP BY
+
+    CASE
+
+        WHEN YearsAtCompany &lt;= 2 THEN '0-2 años'
+
+        WHEN YearsAtCompany &lt;= 5 THEN '3-5 años'
+
+        WHEN YearsAtCompany &lt;= 10 THEN '6-10 años'
+
+        ELSE 'Más de 10 años'
+
+    END
+
+
+
+ORDER BY tasa_rotacion DESC;</sql><current_tab id="1"/></tab_sql></sqlb_project>
