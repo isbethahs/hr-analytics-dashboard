@@ -294,18 +294,9 @@ Analista de Datos
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia **MIT License**.
+Este proyecto está bajo la licencia MIT.
 
-Copyright (c) 2026 Isbeth Andrea Hernández Soto
 
-Se concede permiso, de forma gratuita, a cualquier persona que obtenga una 
-copia de este proyecto y los archivos asociados, para usar, copiar, modificar, 
-fusionar, publicar y distribuir el proyecto, sujeto a las siguientes condiciones:
-
-El aviso de copyright anterior y este aviso de permiso se incluirán en todas 
-las copias o partes sustanciales del proyecto.
-
-EL PROYECTO SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO.
 
 ---
 
